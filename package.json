@@ -15,7 +15,9 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "http-codes": "^1.0.0",
-    "mongoose": "^5.11.3"
+    "mongoose": "^5.11.3",
+    "nodemailer": "^6.4.16",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "joi": "^17.3.0",
