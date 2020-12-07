@@ -1,31 +1,5 @@
-const mongoose = require("mongoose");
+const User = require("../models/User");
 const { v4: uuidv4 } = require("uuid");
-
-const userSchema = new mongoose.Schema({
-  first_name: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  last_name: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  password: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  email: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  isActive: Boolean
-});
-
-const User = mongoose.model("User", userSchema);
 
 /**
  * User registration work flow.
