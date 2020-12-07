@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 
 /**
@@ -7,10 +8,16 @@ const { v4: uuidv4 } = require("uuid");
  */
 async function registerUser(payload) {
     try {
-      const unique_id = uuidv4();
-      
-      // User payload
-      const userPayload = { ...payload, isActive: false };
+      const { email } = payload;
+      const emailExists = await User.findOne({ email: email});
+
+      if (emailExists) {
+        return "Email Already Exists";
+      }
+
+      const salt = await bcrypt.genSalt(12);
+      const hashPassword = await bcrypt.hash(payload.password, salt);
+      const userPayload = { ...payload, isActive: false, password: hashPassword };
     
       const usersPayload = new User(userPayload);
       const newUser = await usersPayload.save({
