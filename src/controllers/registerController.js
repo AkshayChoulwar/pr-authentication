@@ -1,8 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
-const nodemailer = require("nodemailer");
-
+const sendEmail = require("../helpers/emailUtil");
 /**
  * User registration work flow.
  * @param {*} payload Register user request.
@@ -33,29 +32,18 @@ async function registerUser(payload) {
 
       const { _id, first_name, last_name, createdAt, updatedAt } = newUser;
 
-
       // Create Link:
-      const verifyLink = `https://localhost:7777/api/users/verifyUser?email=${newUser.email}&token=${newUser.uuidToken}`;
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASSWORD
-        },
-      });
-
+      const verifyLink = `http://localhost:7777/api/users/verifyUser?email=${newUser.email}&token=${newUser.uuidToken}`;
+      
       const mailOptions = {
         from: process.env.EMAIL,
         to: newUser.email,
         subject: "Confirm Product Hunt Account",
         html: `<h4>Please click on the below link:</h4><br>${verifyLink}`,
       };
-
-      console.log("Sending the email");
-      const emailResponse = await transporter.sendMail(mailOptions);
-
-      console.log("Email sent", emailResponse);
-
+      
+      await sendEmail(mailOptions);
+      
       return {
         userID: _id,
         email: newUser.email,
@@ -67,11 +55,34 @@ async function registerUser(payload) {
 
     
     } catch (error) {
-
         throw error;   
     }
 }
 
+/**
+ * Verify If user is valid or not using email
+ * @param {*} userEmail User Email
+ * @param {*} userToken User UUID Token
+ */
+async function verifyUser(userEmail, userToken) {
+  try {
+    console.log("verifyUser called");
+    const user = await User.findOne({email: userEmail});
+
+    if (user.uuidToken === userToken) {
+      user.isActive = true;
+      await user.save();
+      return "Verified"
+    } else {
+      return "Token does not match";
+    }
+
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
-  registerUser
+  registerUser,
+  verifyUser
 };

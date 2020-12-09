@@ -9,6 +9,7 @@ const app = express();
 require("dotenv").config();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Load the register router.
 const registerRouter = require("./src/routes/register");
