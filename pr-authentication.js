@@ -2,6 +2,11 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const mongoose = require("mongoose");
 
+// Load the register router.
+const registerRouter = require("./src/routes/register");
+// Load the login router.
+const loginRouter = require("./src/routes/login");
+
 // Create the express application.
 const app = express();
 
@@ -10,11 +15,8 @@ require("dotenv").config();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Load the register router.
-const registerRouter = require("./src/routes/register");
-
 app.use("/api/users", registerRouter);
+app.use("/api/user", loginRouter);
 
 const port = process.env.AUTH_PORT || 9999;
 
